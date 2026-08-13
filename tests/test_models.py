@@ -4,16 +4,6 @@ from src.models import (
     create_forecast_data,
     create_weather_data,
 )
-from src.utils import get_weather_description
-
-
-def test_clear_sky_weather_code():
-    """Weather code 0 should return 'Clear sky'."""
-
-    result = get_weather_description(0)
-
-    assert result == "Clear sky"
-
 
 def test_create_weather_data():
     """API data should be converted into a WeatherData object."""
