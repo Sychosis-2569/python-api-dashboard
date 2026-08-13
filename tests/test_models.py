@@ -1,3 +1,9 @@
+from src.models import (
+    ForecastDay,
+    WeatherData,
+    create_forecast_data,
+    create_weather_data,
+)
 from src.utils import get_weather_description
 
 
@@ -7,8 +13,6 @@ def test_clear_sky_weather_code():
     result = get_weather_description(0)
 
     assert result == "Clear sky"
-
-from src.models import WeatherData, create_weather_data
 
 
 def test_create_weather_data():
@@ -34,3 +38,43 @@ def test_create_weather_data():
     assert weather.weather_code == 0
     assert weather.time == "2026-08-13T13:15"
     assert weather.timezone == "Africa/Johannesburg"
+
+
+def test_create_forecast_data():
+    """Daily API data should be converted into ForecastDay objects."""
+
+    api_response = {
+        "daily": {
+            "time": [
+                "2026-08-13",
+                "2026-08-14",
+            ],
+            "weather_code": [
+                3,
+                0,
+            ],
+            "temperature_2m_max": [
+                15.8,
+                18.5,
+            ],
+            "temperature_2m_min": [
+                4.8,
+                4.8,
+            ],
+        }
+    }
+
+    forecast = create_forecast_data(api_response)
+
+    assert len(forecast) == 2
+    assert isinstance(forecast[0], ForecastDay)
+
+    assert forecast[0].date == "2026-08-13"
+    assert forecast[0].weather_code == 3
+    assert forecast[0].temperature_max == 15.8
+    assert forecast[0].temperature_min == 4.8
+
+    assert forecast[1].date == "2026-08-14"
+    assert forecast[1].weather_code == 0
+    assert forecast[1].temperature_max == 18.5
+    assert forecast[1].temperature_min == 4.8

@@ -54,6 +54,12 @@ def get_weather(latitude: float, longitude: float) -> dict:
             "wind_speed_10m",
             "weather_code",
         ],
+        "daily": [
+            "weather_code",
+            "temperature_2m_max",
+            "temperature_2m_min",
+        ],
+        "forecast_days": 5,
         "timezone": "auto",
     }
 

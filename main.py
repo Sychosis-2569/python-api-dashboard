@@ -1,6 +1,6 @@
 from src.api_client import APIError, get_location_coordinates, get_weather
-from src.dashboard import display_weather
-from src.models import create_weather_data
+from src.dashboard import display_forecast, display_weather
+from src.models import create_forecast_data, create_weather_data
 from src.utils import configure_logging
 
 
@@ -24,8 +24,10 @@ def main() -> None:
         weather_response = get_weather(latitude, longitude)
 
         weather = create_weather_data(weather_response)
+        forecast = create_forecast_data(weather_response)
 
         display_weather(location, weather)
+        display_forecast(forecast)
 
     except ValueError as error:
         print(f"Error: {error}")
@@ -34,4 +36,8 @@ def main() -> None:
         print(f"API Error: {error}")
 
     except Exception as error:
-     print(f"An unexpected error occurred: {error}")
+        print(f"An unexpected error occurred: {error}")
+
+
+if __name__ == "__main__":
+    main()
