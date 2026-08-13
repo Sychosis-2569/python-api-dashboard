@@ -2,8 +2,7 @@ import pytest
 import requests
 from unittest.mock import Mock, patch
 
-from src.api_client import APIError, get_location_coordinates, get_weather
-
+from src.api_client import APIError, get_weather, search_locations
 
 @patch("src.api_client.requests.get")
 def test_location_not_found(mock_get):
@@ -15,8 +14,7 @@ def test_location_not_found(mock_get):
     mock_get.return_value = mock_response
 
     with pytest.raises(ValueError, match="Location not found"):
-        get_location_coordinates("NotARealPlace123")
-
+        search_locations("NotARealPlace123")
 
 @patch("src.api_client.requests.get")
 def test_api_http_error(mock_get):
@@ -31,7 +29,7 @@ def test_api_http_error(mock_get):
     mock_get.return_value = mock_response
 
     with pytest.raises(APIError, match="Unable to retrieve location data"):
-        get_location_coordinates("Pretoria")
+        search_locations("Pretoria")
 
 
 @patch("src.api_client.requests.get")
@@ -74,3 +72,30 @@ def test_weather_api_http_error(mock_get):
 
     with pytest.raises(APIError, match="Unable to retrieve weather data"):
         get_weather(-25.7449, 28.1878)
+
+@patch("src.api_client.requests.get")
+def test_search_locations_success(mock_get):
+    """A successful location search should return matching locations."""
+
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        "results": [
+            {
+                "name": "Cape Town",
+                "latitude": -33.9258,
+                "longitude": 18.4232,
+                "country": "South Africa",
+                "admin1": "Western Cape",
+            }
+        ]
+    }
+
+    mock_get.return_value = mock_response
+
+    results = search_locations("Cape Town")
+
+    assert len(results) == 1
+    assert results[0]["name"] == "Cape Town"
+    assert results[0]["country"] == "South Africa"
+    assert results[0]["latitude"] == -33.9258
+    assert results[0]["longitude"] == 18.4232

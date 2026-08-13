@@ -1,32 +1,61 @@
-from src.api_client import APIError, get_location_coordinates, get_weather
+from src.api_client import APIError, get_weather, search_locations
 from src.dashboard import display_forecast, display_weather
 from src.models import create_forecast_data, create_weather_data
 from src.utils import configure_logging
 
+def select_location(results: list[dict]) -> dict:
+    """Allow the user to select a location from search results."""
 
-def main() -> None:
-    """Run the weather dashboard."""
+    if len(results) == 1:
+        return results[0]
 
-    configure_logging()
+    print("\nMultiple locations found:")
 
-    print("Python API Dashboard")
-    print("--------------------")
+    for index, result in enumerate(results, start=1):
+        name = result.get("name", "Unknown")
+        country = result.get("country", "Unknown")
+        admin1 = result.get("admin1")
 
-    location = input("Enter a location: ").strip()
+        if admin1:
+            print(f"{index}. {name}, {admin1}, {country}")
+        else:
+            print(f"{index}. {name}, {country}")
 
-    if not location:
-        print("Please enter a location.")
-        return
+    while True:
+        choice = input(
+            f"\nSelect a location (1-{len(results)}): "
+        ).strip()
+
+        try:
+            selection = int(choice)
+        except ValueError:
+            print("Please enter a valid number.")
+            continue
+
+        if 1 <= selection <= len(results):
+            return results[selection - 1]
+
+        print(f"Please choose a number between 1 and {len(results)}.")
+
+
+def display_location_weather(location: str) -> None:
+    """Fetch and display weather information for a location."""
 
     try:
-        latitude, longitude = get_location_coordinates(location)
+        locations = search_locations(location)
+        selected_location = select_location(locations)
+
+        latitude = selected_location["latitude"]
+        longitude = selected_location["longitude"]
+
+        display_name = selected_location.get("name", location)
 
         weather_response = get_weather(latitude, longitude)
 
         weather = create_weather_data(weather_response)
         forecast = create_forecast_data(weather_response)
 
-        display_weather(location, weather)
+        display_weather(display_name, weather)
         display_forecast(forecast)
 
     except ValueError as error:
@@ -37,6 +66,26 @@ def main() -> None:
 
     except Exception as error:
         print(f"An unexpected error occurred: {error}")
+
+
+def main() -> None:
+    """Run the weather dashboard."""
+
+    configure_logging()
+
+    print("Python API Dashboard")
+    print("--------------------")
+
+    while True:
+        location = input(
+            "\nEnter a location (or press Enter to exit): "
+        ).strip()
+
+        if not location:
+            print("Goodbye!")
+            break
+
+        display_location_weather(location)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+from typing import Any
+
 import logging
 
 import requests
@@ -9,14 +11,14 @@ class APIError(Exception):
     """Raised when an API request fails."""
 
 
-def get_location_coordinates(location: str) -> tuple[float, float]:
-    """Return the latitude and longitude for a location."""
+def search_locations(location: str) -> list[dict[str, Any]]:
+    """Return possible locations matching a search query."""
 
     url = "https://geocoding-api.open-meteo.com/v1/search"
 
     params = {
         "name": location,
-        "count": 1,
+        "count": 5,
         "language": "en",
         "format": "json",
     }
@@ -35,9 +37,7 @@ def get_location_coordinates(location: str) -> tuple[float, float]:
     if not data.get("results"):
         raise ValueError(f"Location not found: {location}")
 
-    result = data["results"][0]
-
-    return result["latitude"], result["longitude"]
+    return data["results"]
 
 
 def get_weather(latitude: float, longitude: float) -> dict:
