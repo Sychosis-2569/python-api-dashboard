@@ -1,7 +1,9 @@
 from src.models import (
     ForecastDay,
+    Location,
     WeatherData,
     create_forecast_data,
+    create_location_data,
     create_weather_data,
 )
 
@@ -68,3 +70,43 @@ def test_create_forecast_data():
     assert forecast[1].weather_code == 0
     assert forecast[1].temperature_max == 18.5
     assert forecast[1].temperature_min == 4.8
+
+def test_create_location_data():
+    """Geocoding API data should be converted into a Location object."""
+
+    api_response = {
+        "name": "Cape Town",
+        "country": "South Africa",
+        "admin1": "Western Cape",
+        "latitude": -33.9258,
+        "longitude": 18.4232,
+    }
+
+    location = create_location_data(api_response)
+
+    assert isinstance(location, Location)
+    assert location.name == "Cape Town"
+    assert location.country == "South Africa"
+    assert location.admin1 == "Western Cape"
+    assert location.latitude == -33.9258
+    assert location.longitude == 18.4232
+
+
+def test_create_location_data_without_region():
+    """Location data should support missing regional information."""
+
+    api_response = {
+        "name": "Somewhere",
+        "country": "Test Country",
+        "latitude": 10.0,
+        "longitude": 20.0,
+    }
+
+    location = create_location_data(api_response)
+
+    assert isinstance(location, Location)
+    assert location.name == "Somewhere"
+    assert location.country == "Test Country"
+    assert location.admin1 is None
+    assert location.latitude == 10.0
+    assert location.longitude == 20.0

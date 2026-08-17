@@ -1,5 +1,26 @@
 from dataclasses import dataclass
 
+@dataclass
+class Location:
+    """Represents a geocoded location."""
+
+    name: str
+    country: str
+    admin1: str | None
+    latitude: float
+    longitude: float
+
+def create_location_data(api_response: dict) -> Location:
+    """Convert a geocoding API result into a Location object."""
+
+    return Location(
+        name=api_response["name"],
+        country=api_response["country"],
+        admin1=api_response.get("admin1"),
+        latitude=api_response["latitude"],
+        longitude=api_response["longitude"],
+    )
+
 
 @dataclass
 class WeatherData:

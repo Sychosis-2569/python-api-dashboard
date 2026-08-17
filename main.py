@@ -1,9 +1,9 @@
 from src.api_client import APIError, get_weather, search_locations
 from src.dashboard import display_forecast, display_weather
-from src.models import create_forecast_data, create_weather_data
+from src.models import Location, create_forecast_data, create_weather_data
 from src.utils import configure_logging
 
-def select_location(results: list[dict]) -> dict:
+def select_location(results: list[Location]) -> Location:
     """Allow the user to select a location from search results."""
 
     if len(results) == 1:
@@ -12,14 +12,10 @@ def select_location(results: list[dict]) -> dict:
     print("\nMultiple locations found:")
 
     for index, result in enumerate(results, start=1):
-        name = result.get("name", "Unknown")
-        country = result.get("country", "Unknown")
-        admin1 = result.get("admin1")
-
-        if admin1:
-            print(f"{index}. {name}, {admin1}, {country}")
+        if result.admin1:
+            print(f"{index}. {result.name}, {result.admin1}, {result.country}")
         else:
-            print(f"{index}. {name}, {country}")
+            print(f"{index}. {result.name}, {result.country}")
 
     while True:
         choice = input(
@@ -45,10 +41,10 @@ def display_location_weather(location: str) -> None:
         locations = search_locations(location)
         selected_location = select_location(locations)
 
-        latitude = selected_location["latitude"]
-        longitude = selected_location["longitude"]
+        latitude = selected_location.latitude
+        longitude = selected_location.longitude
 
-        display_name = selected_location.get("name", location)
+        display_name = selected_location.name
 
         weather_response = get_weather(latitude, longitude)
 

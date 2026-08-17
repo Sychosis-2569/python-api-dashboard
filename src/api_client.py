@@ -1,8 +1,8 @@
-from typing import Any
-
 import logging
 
 import requests
+
+from src.models import Location, create_location_data
 
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ class APIError(Exception):
     """Raised when an API request fails."""
 
 
-def search_locations(location: str) -> list[dict[str, Any]]:
+def search_locations(location: str) -> list[Location]:
     """Return possible locations matching a search query."""
 
     url = "https://geocoding-api.open-meteo.com/v1/search"
@@ -37,7 +37,10 @@ def search_locations(location: str) -> list[dict[str, Any]]:
     if not data.get("results"):
         raise ValueError(f"Location not found: {location}")
 
-    return data["results"]
+    return [
+        create_location_data(result)
+        for result in data["results"]
+    ]
 
 
 def get_weather(latitude: float, longitude: float) -> dict:

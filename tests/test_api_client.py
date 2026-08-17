@@ -75,7 +75,7 @@ def test_weather_api_http_error(mock_get):
 
 @patch("src.api_client.requests.get")
 def test_search_locations_success(mock_get):
-    """A successful location search should return matching locations."""
+    """A successful location search should return Location objects."""
 
     mock_response = Mock()
     mock_response.json.return_value = {
@@ -95,7 +95,8 @@ def test_search_locations_success(mock_get):
     results = search_locations("Cape Town")
 
     assert len(results) == 1
-    assert results[0]["name"] == "Cape Town"
-    assert results[0]["country"] == "South Africa"
-    assert results[0]["latitude"] == -33.9258
-    assert results[0]["longitude"] == 18.4232
+    assert results[0].name == "Cape Town"
+    assert results[0].country == "South Africa"
+    assert results[0].admin1 == "Western Cape"
+    assert results[0].latitude == -33.9258
+    assert results[0].longitude == 18.4232
