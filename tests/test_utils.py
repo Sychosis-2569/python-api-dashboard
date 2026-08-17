@@ -31,3 +31,10 @@ def test_normalize_location_input_preserves_normal_input():
     result = normalize_location_input("Pretoria")
 
     assert result == "Pretoria"
+
+def test_normalize_location_input():
+    """Location input should have surrounding and repeated whitespace removed."""
+
+    result = normalize_location_input("  Cape   Town  ")
+
+    assert result == "Cape Town"

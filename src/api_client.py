@@ -4,6 +4,7 @@ import re
 import requests
 
 from src.models import Location, create_location_data
+from src.utils import normalize_location_input
 
 
 logger = logging.getLogger(__name__)
@@ -141,3 +142,18 @@ def get_weather(latitude: float, longitude: float) -> dict:
         raise APIError("Unable to retrieve weather data.") from error
 
     return response.json()
+
+def _normalize_search_query(location: str) -> str:
+    """Normalize a location search query."""
+
+    query = normalize_location_input(location).lower()
+
+    common_names = {
+        "capetown": "cape town",
+        "johannesburg": "johannesburg",
+        "pretoria": "pretoria",
+        "durban": "durban",
+        "portelizabeth": "port elizabeth",
+    }
+
+    return common_names.get(query, query)
