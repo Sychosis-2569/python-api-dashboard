@@ -1,7 +1,7 @@
 from src.api_client import APIError, get_weather, search_locations
 from src.dashboard import display_forecast, display_weather
 from src.models import Location, create_forecast_data, create_weather_data
-from src.utils import configure_logging
+from src.utils import configure_logging, normalize_location_input
 
 def select_location(results: list[Location]) -> Location:
     """Allow the user to select a location from search results."""
@@ -75,7 +75,9 @@ def main() -> None:
     while True:
         location = input(
             "\nEnter a location (or press Enter to exit): "
-        ).strip()
+        )
+
+        location = normalize_location_input(location)
 
         if not location:
             print("Goodbye!")

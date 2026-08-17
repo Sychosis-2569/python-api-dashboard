@@ -9,6 +9,11 @@ def configure_logging() -> None:
         format="%(asctime)s | %(levelname)s | %(message)s",
     )
 
+def normalize_location_input(location: str) -> str:
+    """Normalize user-provided location input."""
+
+    return " ".join(location.strip().split())
+
 WEATHER_CODES = {
     0: "Clear sky",
     1: "Mainly clear",
