@@ -100,3 +100,60 @@ def test_search_locations_success(mock_get):
     assert results[0].admin1 == "Western Cape"
     assert results[0].latitude == -33.9258
     assert results[0].longitude == 18.4232
+
+@patch("src.api_client.requests.get")
+def test_search_normalizes_missing_space(mock_get):
+    """Location searches should normalize common missing spaces."""
+
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        "results": [
+            {
+                "name": "Cape Town",
+                "latitude": -33.9258,
+                "longitude": 18.4232,
+                "country": "South Africa",
+                "admin1": "Western Cape",
+            }
+        ]
+    }
+
+    mock_get.return_value = mock_response
+
+    search_locations("capetown")
+
+    request_params = mock_get.call_args.kwargs["params"]
+
+    assert request_params["name"] == "cape town"
+
+
+@patch("src.api_client.requests.get")
+def test_search_ranks_exact_match_first(mock_get):
+    """Exact location matches should be ranked before partial matches."""
+
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        "results": [
+            {
+                "name": "Cape Townshend",
+                "latitude": -20.0,
+                "longitude": 146.0,
+                "country": "Australia",
+                "admin1": "Queensland",
+            },
+            {
+                "name": "Cape Town",
+                "latitude": -33.9258,
+                "longitude": 18.4232,
+                "country": "South Africa",
+                "admin1": "Western Cape",
+            },
+        ]
+    }
+
+    mock_get.return_value = mock_response
+
+    results = search_locations("Cape Town")
+
+    assert results[0].name == "Cape Town"
+    assert results[1].name == "Cape Townshend"
