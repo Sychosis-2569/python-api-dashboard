@@ -27,8 +27,10 @@ class WeatherData:
     """Represents the current weather conditions for a location."""
 
     temperature: float
+    apparent_temperature: float
     humidity: int
     wind_speed: float
+    precipitation: float
     weather_code: int
     time: str
     timezone: str
@@ -41,8 +43,10 @@ def create_weather_data(api_response: dict) -> WeatherData:
 
     return WeatherData(
         temperature=current["temperature_2m"],
+        apparent_temperature=current["apparent_temperature"],
         humidity=current["relative_humidity_2m"],
         wind_speed=current["wind_speed_10m"],
+        precipitation=current["precipitation"],
         weather_code=current["weather_code"],
         time=current["time"],
         timezone=api_response["timezone"],

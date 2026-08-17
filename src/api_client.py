@@ -53,8 +53,10 @@ def get_weather(latitude: float, longitude: float) -> dict:
         "longitude": longitude,
         "current": [
             "temperature_2m",
+            "apparent_temperature",
             "relative_humidity_2m",
             "wind_speed_10m",
+            "precipitation",
             "weather_code",
         ],
         "daily": [

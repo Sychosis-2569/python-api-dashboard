@@ -14,7 +14,9 @@ def test_create_weather_data():
         "timezone": "Africa/Johannesburg",
         "current": {
             "temperature_2m": 15.3,
+            "apparent_temperature": 14.8,
             "relative_humidity_2m": 44,
+            "precipitation": 0.0,
             "wind_speed_10m": 4.6,
             "weather_code": 0,
             "time": "2026-08-13T13:15",
@@ -25,7 +27,9 @@ def test_create_weather_data():
 
     assert isinstance(weather, WeatherData)
     assert weather.temperature == 15.3
+    assert weather.apparent_temperature == 14.8
     assert weather.humidity == 44
+    assert weather.precipitation == 0.0
     assert weather.wind_speed == 4.6
     assert weather.weather_code == 0
     assert weather.time == "2026-08-13T13:15"
