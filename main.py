@@ -72,18 +72,22 @@ def main() -> None:
     print("Python API Dashboard")
     print("--------------------")
 
-    while True:
-        location = input(
-            "\nEnter a location (or press Enter to exit): "
-        )
+    try:
+        while True:
+            location = input(
+                "\nEnter a location (or press Enter to exit): "
+            )
 
-        location = normalize_location_input(location)
+            location = normalize_location_input(location)
 
-        if not location:
-            print("Goodbye!")
-            break
+            if not location:
+                print("Goodbye!")
+                break
 
-        display_location_weather(location)
+            display_location_weather(location)
+
+    except KeyboardInterrupt:
+        print("\n\nGoodbye!")
 
 
 if __name__ == "__main__":
